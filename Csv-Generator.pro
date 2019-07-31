@@ -8,7 +8,8 @@ SOURCES += \
         main.cpp
 
 HEADERS += \
-    cmdparams.h
+    cmdparams.h \
+    constants.h
 
 DISTFILES += \
     схема

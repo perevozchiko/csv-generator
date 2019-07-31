@@ -15,6 +15,8 @@ private:
     std::string encoding;
     std::string outputFileName;
     void cmdParse(int argc, char* argv[]);
+    void errorCountArguments(int count);
+    void help();
 };
 
 #endif // CMDPARAMS_H

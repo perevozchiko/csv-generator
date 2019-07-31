@@ -7,7 +7,10 @@ CONFIG += thread
 CONFIG -= qt
 
 HEADERS += \
-        tst_firsttestcase.h
+    ../cmdparams.h \
+    ../constants.h \
+    tst_csvGenerator.h
 
 SOURCES += \
+        ../cmdparams.cpp \
         main.cpp
