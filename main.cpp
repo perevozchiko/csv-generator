@@ -1,9 +1,8 @@
 #include <iostream>
+#include <cmdparams.h>
 
-using namespace std;
 
 int main(int argc, char* argv[])
 {
-
-
+    CmdParams cmdParams(argc, argv);
 }
