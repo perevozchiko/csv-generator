@@ -20,6 +20,7 @@ private:
     void setParams(int argc, char* argv[]);
     void errorCountArguments(int count);
     bool isValid(std::string arguments);
+    int checkArgNum(std::string num);
 };
 
 #endif // CMDPARAMS_H

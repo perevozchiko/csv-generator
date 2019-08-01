@@ -25,11 +25,10 @@ void CmdParams::setParams(int argc, char* argv[])
     {
         if (strcmp(argv[i], "-col") == 0)
         {
-            if(i+1 < argc)
+            if((i + 1) < argc)
             {
-
+                numColumns = checkArgNum(argv[i++]);
             }
-            numColumns = atoi(argv[i]);
         }
         if (strcmp(argv[i], "-row") == 0)
         {
@@ -75,6 +74,11 @@ void CmdParams::errorCountArguments(int count)
 bool CmdParams::isValid(std::string arguments)
 {
     return false;
+}
+
+int CmdParams::checkArgNum(std::string num)
+{
+
 }
 
 
