@@ -25,10 +25,7 @@ void CmdParams::setParams(int argc, char* argv[])
     {
         if (strcmp(argv[i], "-col") == 0)
         {
-            if((i + 1) < argc)
-            {
-                numColumns = checkArgNum(argv[i++]);
-            }
+
         }
         if (strcmp(argv[i], "-row") == 0)
         {
@@ -102,6 +99,56 @@ void CmdParams::showUsage(std::string appName)
               << "\n\t-enc\tКодировка, значение по умолчанию \"" << defaultEncoding << "\""
               << "\n\t-out\tИмя выходного файла (обязательный параметр)"
               << std::endl << std::endl;
+}
+
+int CmdParams::getNumColumns() const
+{
+    return numColumns;
+}
+
+void CmdParams::setNumColumns(int value)
+{
+    numColumns = value;
+}
+
+int CmdParams::getNumRows() const
+{
+    return numRows;
+}
+
+void CmdParams::setNumRows(int value)
+{
+    numRows = value;
+}
+
+int CmdParams::getMaxLengthValue() const
+{
+    return maxLengthValue;
+}
+
+void CmdParams::setMaxLengthValue(int value)
+{
+    maxLengthValue = value;
+}
+
+std::string CmdParams::getEncoding() const
+{
+    return encoding;
+}
+
+void CmdParams::setEncoding(const std::string &value)
+{
+    encoding = value;
+}
+
+std::string CmdParams::getOutputFileName() const
+{
+    return outputFileName;
+}
+
+void CmdParams::setOutputFileName(const std::string &value)
+{
+    outputFileName = value;
 }
 
 

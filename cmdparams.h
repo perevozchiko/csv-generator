@@ -10,6 +10,21 @@ public:
     CmdParams(int argc, char* argv[]);
     static void showUsage(std::string appName);
 
+    int getNumColumns() const;
+    void setNumColumns(int value);
+
+    int getNumRows() const;
+    void setNumRows(int value);
+
+    int getMaxLengthValue() const;
+    void setMaxLengthValue(int value);
+
+    std::string getEncoding() const;
+    void setEncoding(const std::string &value);
+
+    std::string getOutputFileName() const;
+    void setOutputFileName(const std::string &value);
+
 private:
     int numColumns{defaultNumColumns};
     int numRows{defaultNumRows};
