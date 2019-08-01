@@ -2,21 +2,24 @@
 #define CMDPARAMS_H
 #include <string>
 #include <iostream>
+#include "constants.h"
 
 class CmdParams
 {
 public:
     CmdParams(int argc, char* argv[]);
+    static void showUsage(std::string appName);
 
 private:
-    int numColumns;
-    int numRows;
-    int maxLengthValue;
-    std::string encoding;
+    int numColumns{defaultNumColumns};
+    int numRows{defaultNumRows};
+    int maxLengthValue{defaultMaxLengthValue};
+    std::string encoding{defaultEncoding};
     std::string outputFileName;
-    void cmdParse(int argc, char* argv[]);
+    bool isValidArguments{true};
+    void setParams(int argc, char* argv[]);
     void errorCountArguments(int count);
-    void help();
+    bool isValid(std::string arguments);
 };
 
 #endif // CMDPARAMS_H
