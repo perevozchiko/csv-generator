@@ -11,5 +11,4 @@ HEADERS += \
     cmdparams.h \
     constants.h
 
-DISTFILES += \
-    схема
+DISTFILES +=
