@@ -8,7 +8,8 @@ class CmdParams
 {
 public:
     CmdParams(int argc, char* argv[]);
-    static void showUsage(std::string appName);
+    ~CmdParams();
+    void showUsage();
 
     int getNumColumns() const;
     void setNumColumns(int value);
@@ -25,17 +26,24 @@ public:
     std::string getOutputFileName() const;
     void setOutputFileName(const std::string &value);
 
-private:
+    bool isValid();
+
+private:    
     int numColumns{defaultNumColumns};
     int numRows{defaultNumRows};
     int maxLengthValue{defaultMaxLengthValue};
     std::string encoding{defaultEncoding};
     std::string outputFileName;
-    bool isValidArguments{true};
-    void setParams(int argc, char* argv[]);
+    std::string appName;
+    bool noErrors{true};
+    void parseParams(int argc, char* argv[]);
     void errorCountArguments(int count);
-    bool isValid(std::string arguments);
     int checkArgNum(std::string num);
+    int convertToInt(std::string value);
+    void showErrNoValue(std::string option);
+    bool isValidOption(std::string option);
+    void setParams(std::string option, std::string value);
+
 };
 
 #endif // CMDPARAMS_H

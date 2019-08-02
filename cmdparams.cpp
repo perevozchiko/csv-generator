@@ -1,86 +1,161 @@
 #include <cstring>
 #include "cmdparams.h"
 #include "constants.h"
+#include <string>
 
 CmdParams::CmdParams(int argc, char* argv[])
 {
+    appName = argv[0];
     if (argc > 1)
     {
-        setParams(argc, argv);
+        parseParams(argc, argv);
     }
     else
     {
-        showUsage(argv[0]);
+        showUsage();
     }
 }
 
-void CmdParams::setParams(int argc, char* argv[])
+CmdParams::~CmdParams()
 {
-    if (argc == 2 && (strcmp(argv[1], "-help") == 0 || strcmp(argv[1], "-h") == 0))
-    {
-        showUsage(argv[0]);
-    }
 
-    for (int i = 1; i < argc; i++)
-    {
-        if (strcmp(argv[i], "-col") == 0)
-        {
-
-        }
-        if (strcmp(argv[i], "-row") == 0)
-        {
-            i++;
-            numRows = atoi(argv[i]);
-        }
-        if (strcmp(argv[i], "-len") == 0)
-        {
-            i++;
-            maxLengthValue = atoi(argv[i]);
-        }
-        if (strcmp(argv[i], "-enc") == 0)
-        {
-            i++;
-            encoding = argv[i];
-        }
-        if (strcmp(argv[i], "-out") == 0)
-        {
-            i++;
-            outputFileName = argv[i];
-        }
-    }
 }
 
-
-
-void CmdParams::errorCountArguments(int count)
+void CmdParams::showErrNoValue(std::string option)
 {
-    if(count > amountArgs-1)
-    {
-        std::cerr << ", а введено: " << count-1 << std::endl ;
-    }
-    else if(count < amountArgs-1)
-    {
-        std::cerr << "Введено недостаточное количество аргументов.\nНеобходимое количество аргументов: 10, а введено: " << count-1 << "\n" ;
-    }
-    else
-    {
-        std::cerr << "Неизвестная ошибка\n";
-    }
+    std::cerr << "\nОшибка: не введено значение для параметра \"" << option << "\"" << std::endl << std::endl;
 }
 
-bool CmdParams::isValid(std::string arguments)
+bool CmdParams::isValidOption(std::string option)
 {
+    if (option == "-col" ||
+            option == "-row" ||
+            option == "-enc" ||
+            option == "-out" ||
+            option == "-len" ||
+            option == "-help"||
+            option == "-h")
+    {
+        return  true;
+    }
+
     return false;
 }
 
-int CmdParams::checkArgNum(std::string num)
+void CmdParams::setParams(std::string option, std::string value)
 {
+    if (option == "-col" || option == "-row" || option == "-len")
+    {
+        long int numValue = convertToInt(value);
+        if (numValue == 0)
+        {
+            return;
+        }
 
+        if (option == "-col")
+        {
+            if (numValue > maxNumColumns)
+            {
+                noErrors = false;
+                std::cerr << "\nОшибка: введено слишком большое число для параметра -col, максимальное значение: " << maxNumColumns << std::endl << std::endl;
+                return;
+            }
+            else
+            {
+                setNumColumns(numValue);
+            }
+        }
+        else if (option == "-row")
+        {
+            if (numValue > maxNumRows)
+            {
+                noErrors = false;
+                std::cerr << "\nОшибка: введено слишком большое число для параметра -row, максимальное значение: " << maxNumRows << std::endl << std::endl;
+                return;
+            }
+            else
+            {
+                setNumRows(numValue);
+            }
+        }
+        else if (option == "-len")
+        {
+            if (numValue > maxLength)
+            {
+                noErrors = false;
+                std::cerr << "\nОшибка: введено слишком большое число для параметра -len, максимальное значение: " << maxLength << std::endl << std::endl;
+                return;
+            }
+            else
+            {
+                setMaxLengthValue(numValue);
+            }
+        }
+    }
+    else if (option == "-out")
+    {
+        setOutputFileName(value);
+    }
+    else if(option == "-enc")
+    {
+        setEncoding(value);
+    }
+    else if (option == "-help" || option == "-h")
+    {
+        showUsage();
+    }
 }
 
-
-void CmdParams::showUsage(std::string appName)
+void CmdParams::parseParams(int argc, char* argv[])
 {
+    for (int i = 1; i < argc; i++)
+    {
+        std::string option;
+        std::string value;
+
+        if (argv[i][0] == '-' && strlen(argv[i]) > 1)
+        {
+            option = argv[i];
+            int nextArg = i + 1;
+
+            if (nextArg < argc)
+            {
+                value = argv[nextArg];
+                i++;
+            }
+        }
+        else
+        {
+            noErrors = false;
+            std::cerr << "\nОшибка: \"" << argv[i] << "\"" << " - не является параметром\n\n";
+            showUsage();
+            return;
+        }
+
+        if (isValidOption(option))
+        {
+            if (value.empty() && option != "-help" && option != "-h")
+            {
+                showErrNoValue(option);
+            }
+            else
+            {
+                setParams(option, value);
+            }
+        }
+        else
+        {
+            noErrors = false;
+            std::cerr << "\nОшибка: \"" << option << "\"" << " - неизвестный параметр\n\n";
+            showUsage();
+            return;
+        }
+    }
+}
+
+void CmdParams::showUsage()
+{
+    noErrors = false;
     if(appName.empty())
     {
         appName = "<имя программы>";
@@ -93,17 +168,43 @@ void CmdParams::showUsage(std::string appName)
               << std::endl << std::endl;
 
     std::cerr << "Параметры:"
-                 "\n\t-col\tКоличество колонок, значение по умолчанию \"" << defaultNumColumns << "\""
-              << "\n\t-row\tКоличество строк, значение по умолчанию \"" << defaultNumRows << "\""
-              << "\n\t-len\tМаксимальная длина значения для строкового типа, значение по умолчанию \"" << defaultMaxLengthValue << "\""
-              << "\n\t-enc\tКодировка, значение по умолчанию \"" << defaultEncoding << "\""
-              << "\n\t-out\tИмя выходного файла (обязательный параметр)"
+                 "\n\t-col\tУстановить количество колонок, значение по умолчанию \"" << defaultNumColumns << "\", максимальное значение: \"" << maxNumColumns << "\""
+              << "\n\t-row\tУстановить количество строк, значение по умолчанию \"" << defaultNumRows << "\" максимальное значение: \"" << maxNumRows << "\""
+              << "\n\t-len\tУстановить максимальную длину для строкового типа, значение по умолчанию \"" << defaultMaxLengthValue << "\""
+              << "\n\t-enc\tУстановить кодировку, значение по умолчанию \"" << defaultEncoding << "\""
+              << "\n\t-out\tУстановить имя выходного файла (обязательный параметр)"
               << std::endl << std::endl;
 }
 
 int CmdParams::getNumColumns() const
 {
     return numColumns;
+}
+
+int CmdParams::convertToInt(std::string value)
+{
+    std::string number;
+    for (size_t i = 0; i < value.size(); i++)
+    {
+        if(isdigit(value[i]))
+        {
+            number += value[i];
+        }
+        else
+        {
+            noErrors = false;
+            std::cerr << "\nОшибка: \""<< value <<"\" - должно быть целое положительное число\n\n";
+            number = "";
+            break;
+        }
+    }
+    long int inputNum = 0;
+    if (!number.empty())
+    {
+        inputNum = std::stoll(value);
+    }
+
+    return inputNum;
 }
 
 void CmdParams::setNumColumns(int value)
@@ -149,6 +250,11 @@ std::string CmdParams::getOutputFileName() const
 void CmdParams::setOutputFileName(const std::string &value)
 {
     outputFileName = value;
+}
+
+bool CmdParams::isValid()
+{
+    return noErrors;
 }
 
 

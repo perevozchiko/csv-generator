@@ -3,14 +3,23 @@
 #include <typeinfo>
 #include <vector>
 
+
+
+
 int main(int argc, char* argv[])
 {
-    char * str = argv[1];
-    std::cout << str[2] << std::endl;
-    //CmdParams params(argc, argv);
-    /*
-*если
-*
-*/
+    CmdParams params(argc, argv);
+
+    if (params.isValid())
+    {
+
+        std::cout << "\n\n\t\tARGS\n\n";
+        std::cout << "rows: " << params.getNumRows() << std::endl;
+        std::cout << "columns: " << params.getNumColumns() << std::endl;
+        std::cout << "length: " << params.getMaxLengthValue() << std::endl;
+        std::cout << "encodin: " << params.getEncoding() << std::endl;
+        std::cout << "outfile: " << params.getOutputFileName() << std::endl;
+    }
     return 0;
 }
+
