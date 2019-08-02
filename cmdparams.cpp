@@ -53,7 +53,7 @@ void CmdParams::setParams(std::string option, std::string value)
 {
     if (option == "-col" || option == "-row" || option == "-len")
     {
-        long int numValue = convertToInt(value);
+        int numValue = convertToInt(value);
         if (numValue == 0)
         {
             return;
@@ -87,10 +87,10 @@ void CmdParams::setParams(std::string option, std::string value)
         }
         else if (option == "-len")
         {
-            if (numValue > maxLength)
+            if (numValue > maxIntLength)
             {
                 noErrors = false;
-                std::cerr << "\nОшибка: введено слишком большое число для параметра -len, максимальное значение: " << maxLength << std::endl << std::endl;
+                std::cerr << "\nОшибка: введено слишком большое число для параметра -len, максимальное значение: " << maxIntLength << std::endl << std::endl;
                 return;
             }
             else
