@@ -13,6 +13,13 @@ CmdParams::CmdParams(int argc, char* argv[])
     else
     {
         showUsage();
+        return;
+    }
+
+    if (outputFileName.empty())
+    {
+        noErrors = false;
+        std::cerr << "\nОшибка: не указано имя выходного файла. Задайте имя файла с помощью параметра \"-out <имя_выходного_файла>\"\n\n";
     }
 }
 
