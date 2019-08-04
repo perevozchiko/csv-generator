@@ -5,14 +5,12 @@ CONFIG -= qt
 
 SOURCES += \
         cmdparams.cpp \
-        csvFile.cpp \
         generator.cpp \
         main.cpp
 
 HEADERS += \
     cmdparams.h \
     constants.h \
-    csvFile.h \
     generator.h
 
 DISTFILES +=

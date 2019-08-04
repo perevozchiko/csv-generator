@@ -18,6 +18,7 @@ private:
     {
         std::string columnName;
         Type typeName;
+        bool isBadChar{false};
     };
     enum class Cell
     {
@@ -31,6 +32,7 @@ private:
     Type getRandomType();
     int randomInt(int min, int max);
     float randomFloat(float min, float max);
+    bool isUnacceptableChar{false};
     std::string getRandomData();
     void generateHeader();
     std::string getTypeAsString(Type type);

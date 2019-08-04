@@ -7,7 +7,8 @@ Generator::Generator(int _numColumns, int _maxLengthString) :
     numColumns(_numColumns),
     maxLengthString(_maxLengthString)
 {
-    generateHeader();
+    //    std::cout << symbols.size() << std::endl;
+    //    std::cout << symbols[symbols.size()-1] << std::endl;
 }
 
 Generator::~Generator()
@@ -17,80 +18,99 @@ Generator::~Generator()
 
 std::string Generator::generateRow()
 {
-    if (header.size() == 0)
-    {
-        std::cerr << "\nОшибка: нет заголовков\n\n";
-    }
-
     std::string row = "";
 
     for (size_t i = 0; i < header.size(); i++)
     {
         Column col = header[i];
+        std::string value;
         switch (col.typeName)
         {
         case Type::String:
         {
-            int length = randomInt(1, maxIntLength);
-            row += generateRandomString(Cell::simple, length);
+            int length = randomInt(1, maxLengthString);
+            value += generateRandomString(Cell::simple, length);
+            if (isUnacceptableChar)
+            {
+                value = shielding + value + shielding;
+                isUnacceptableChar = false;
+            }
             break;
         }
         case Type::Integer:
         {
-            row += std::to_string(randomInt(0, maxIntLength));
+            value += std::to_string(randomInt(0, maxIntLength));
             break;
         }
         case Type::Float:
         {
-            row += std::to_string(randomFloat(0, maxFloatLength));
+            float randomFloatNum = randomFloat(0, maxFloatLength);
+            value += std::to_string(randomFloatNum);
             break;
         }
         case Type::Date:
         {
-            row += getRandomData();
+            value += getRandomData();
         }
         }
+
         if (i != (header.size()-1))
         {
-            row += delimeter;
+            value += delimeter;
         }
         else
         {
-            row += endLine;
+            value += endLine;
         }
+        row += value;
     }
+
+    //std::cout << row << std::endl;
     return  row;
 }
 
 std::string Generator::getHeader()
 {
-    std::string outputData;
+    generateHeader();
+
+    //    for (int i = 0; i < header.size(); i++)
+    //    {
+    //        std::cout << header[i].columnName << std::endl;
+    //        std::cout << header[i].typeName << std::endl;
+    //        std::cout << header[i].isBadChar << std::endl;
+    //        std::cout << "\n-------------------------------\n" << std::endl;
+    //    }
+
+    std::string outputData ="";
     for(size_t i = 0; i < header.size(); i++)
     {
-        outputData = outputData +
-                header[i].columnName +
+        std::string columnData = header[i].columnName +
                 whiteSpace +
                 getTypeAsString(header[i].typeName);
+
+        if (header[i].isBadChar)
+        {
+            columnData = shielding + columnData + shielding;
+        }
+
         if (i != header.size()-1)
         {
-            outputData += delimeter;
+            columnData += delimeter;
         }
         else
         {
-            outputData += endLine;
+            columnData += endLine;
         }
+        outputData += columnData;
     }
+
+  // std::cout << outputData << std::endl;
     return  outputData;
 }
 
 Type Generator::getRandomType()
 {
     int randomNum = randomInt(1,4);
-    if (1 <= randomNum && randomNum <= 4)
-    {
-        randomNum = 0;
-    }
-
     return static_cast<Type>(randomNum);
 }
 
@@ -105,10 +125,11 @@ int Generator::randomInt(int min, int max)
 
 float Generator::randomFloat(float min, float max)
 {
-    std::random_device rd;  //Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-    std::uniform_real_distribution<float> dis(min, max);
-    return dis(gen);
+    std::random_device rd;     // only used once to initialise (seed) engine
+    std::mt19937 gen(rd());    // random-number engine used (Mersenne-Twister in this case)
+    std::uniform_real_distribution<double> dis(min, max); // guaranteed unbiased
+
+    return static_cast<float>(dis(gen));
 }
 
 std::string Generator::getRandomData()
@@ -164,8 +185,8 @@ std::string Generator::getRandomData()
     {
         monthStr = "0" + monthStr;
     }
-    unsigned long numYearSym = yearStr.size();
-    while (numYearSym--)
+    unsigned long additionalZeros = maxNumSymbolsYear - yearStr.size();
+    while (additionalZeros--)
     {
         yearStr = "0" + yearStr;
     }
@@ -176,14 +197,24 @@ std::string Generator::getRandomData()
 void Generator::generateHeader()
 {
     Column column;
+
     for (int i = 0; i < numColumns; i++)
     {
         int lengthString = randomInt(1, maxLengthString);
 
         column.columnName = generateRandomString(Cell::header, lengthString);
+        column.isBadChar = isUnacceptableChar;
+        isUnacceptableChar = false;
         column.typeName = getRandomType();
         header.push_back(column);
     }
+    //    for (int i = 0; i < header.size(); i++)
+    //    {
+    //        std::cout << header[i].columnName << std::endl;
+    //        std::cout << header[i].typeName << std::endl;
+    //        std::cout << header[i].isBadChar << std::endl;
+    //        std::cout << "\n-------------------------------\n" << std::endl;
+    //    }
 }
 
 std::string Generator::getTypeAsString(Type type)
@@ -210,25 +241,21 @@ std::string Generator::getTypeAsString(Type type)
 std::string Generator::generateRandomString(Generator::Cell flag, int len)
 {
     std::string outputStr = "";
+
     for (int i = 0; i < len; i++)
     {
-        // пробел сделать последним символом и тогда вычесть из symbols.size() вместо "1" - "2", чтобы исключить пробел
-        // и убрать else if где пробел заменяется на нижнее подчеркивание
-
         unsigned long num = static_cast<unsigned long>(randomInt(0, static_cast<int>(symbols.size()-1)));
-        if (symbols[num] == delimeter)
+
+        if (symbols[num] == delimeter || symbols[num] == quotes)
         {
-            outputStr = outputStr + "\"" + delimeter + "\"";
+            isUnacceptableChar = true;
         }
-        else if (symbols[num] == endLine)
+        if (symbols[num] == quotes)
         {
-            outputStr = outputStr + "\"" + endLine + "\"";
+            outputStr += shielding;
         }
-        else if (symbols[num] == quotes)
-        {
-            outputStr = outputStr + "\"\"";
-        }
-        else if(symbols[num] == whiteSpace)
+
+        if(symbols[num] == whiteSpace)
         {
             if (flag == Cell::header)
             {
@@ -244,8 +271,6 @@ std::string Generator::generateRandomString(Generator::Cell flag, int len)
             outputStr += symbols[num];
         }
     }
+
     return  outputStr;
 }
-
-
-
