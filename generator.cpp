@@ -2,6 +2,7 @@
 #include <random>
 #include <ctime>
 #include <iostream>
+#include <algorithm>
 
 Generator::Generator(int _numColumns, int _maxLengthString) :
     numColumns(_numColumns),
@@ -46,6 +47,7 @@ std::string Generator::generateRow()
         {
             float randomFloatNum = randomFloat(0, maxFloatLength);
             value += std::to_string(randomFloatNum);
+            std::replace(value.begin(), value.end(), '.', ',');
             break;
         }
         case Type::Date:
