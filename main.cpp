@@ -30,6 +30,10 @@ int main(int argc, char* argv[])
         }
 
         Generator gen(params.getNumColumns(), params.getMaxLengthValue());
+        if (params.getEncoding() == defaultEncoding)
+        {
+            file << BOM;
+        }
         file << gen.getHeader();
 
         for (int i = 0; i < params.getNumRows(); i++)
