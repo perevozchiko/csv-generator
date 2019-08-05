@@ -30,10 +30,6 @@ int main(int argc, char* argv[])
         }
 
         Generator gen(params.getNumColumns(), params.getMaxLengthValue());
-        if (params.getEncoding() == defaultEncoding)
-        {
-            file << BOM;
-        }
         file << gen.getHeader();
 
         for (int i = 0; i < params.getNumRows(); i++)
@@ -41,15 +37,6 @@ int main(int argc, char* argv[])
             file << gen.generateRow();
         }
         file.close();
-
-
-
-        //        std::cout << "\n\n\t\tARGS\n\n";
-        //        std::cout << "rows: " << params.getNumRows() << std::endl;
-        //        std::cout << "columns: " << params.getNumColumns() << std::endl;
-        //        std::cout << "length: " << params.getMaxLengthValue() << std::endl;
-        //        std::cout << "encodin: " << params.getEncoding() << std::endl;
-        //        std::cout << "outfile: " << params.getOutputFileName() << std::endl;
     }
     return 0;
 }
