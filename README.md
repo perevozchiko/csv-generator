@@ -1,4 +1,5 @@
 # Csv-Generator
+Console application for generating a csv file with random data
 
 Using:
 
